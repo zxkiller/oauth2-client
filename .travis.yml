@@ -1,45 +1,34 @@
 language: php
 
-matrix:
-    include:
-        - php: 5.6
-        - php: 7.0
-        - php: 7.1
-        - php: nightly
-        - php: hhvm-3.6
-          sudo: required
-          dist: trusty
-          group: edge
-        - php: hhvm-3.9
-          sudo: required
-          dist: trusty
-          group: edge
-        - php: hhvm-3.12
-          sudo: required
-          dist: trusty
-          group: edge
-        - php: hhvm-3.15
-          sudo: required
-          dist: trusty
-          group: edge
-        - php: hhvm-nightly
-          sudo: required
-          dist: trusty
-          group: edge
-    fast_finish: true
-    allow_failures:
-        - php: nightly
-        - php: hhvm-nightly
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+  - 7.3
+  - nightly
 
-before_script:
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: nightly
+
+sudo: false
+
+before_install:
+  - travis_retry composer self-update
+
+install:
+  - travis_retry composer require --no-update satooshi/php-coveralls:^1.0
   - travis_retry composer install --no-interaction --prefer-source
 
-script:
+before_script:
   - mkdir -p build/logs
+
+script:
   - ./vendor/bin/parallel-lint src test
-  - ./vendor/bin/phpunit --coverage-text
+  - ./vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml
   - ./vendor/bin/phpcs src --standard=psr2 -sp
 
 after_success:
-  - wget https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar
-  - php coveralls.phar
+  - travis_retry php vendor/bin/coveralls

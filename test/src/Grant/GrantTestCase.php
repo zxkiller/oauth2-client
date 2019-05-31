@@ -4,10 +4,10 @@ namespace League\OAuth2\Client\Test\Grant;
 
 use Eloquent\Phony\Phpunit\Phony;
 use GuzzleHttp\ClientInterface;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\AccessTokenInterface;
 use League\OAuth2\Client\Test\Provider\Fake as MockProvider;
 
 abstract class GrantTestCase extends TestCase
@@ -68,7 +68,7 @@ abstract class GrantTestCase extends TestCase
         $token = $this->provider->getAccessToken($grant, $params);
 
         // Verify
-        $this->assertInstanceOf(AccessToken::class, $token);
+        $this->assertInstanceOf(AccessTokenInterface::class, $token);
 
         Phony::inOrder(
             $client->send->times(1)->calledWith(
